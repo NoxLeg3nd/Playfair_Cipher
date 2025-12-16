@@ -9,10 +9,11 @@ public class PlayfairCipher {
         Scanner sc = new Scanner(System.in);
         System.out.println("==== Playfair Cipher ====");
 
+        // Citirea cheii de la utilizator
         System.out.print("Introduceti cheia: ");
         key = sc.nextLine();
 
-        // Se trece cheia la majuscule si se elimina spatiile
+        // Transformarea cheii in majuscule si eliminarea spatiilor
         key = key.toUpperCase();
         StringBuilder sb_key = new StringBuilder();
         for (i = 0; i < key.length(); i++) {
@@ -20,7 +21,8 @@ public class PlayfairCipher {
                 sb_key.append(key.charAt(i));
             }
         }
-        // Se elimina duplicatele
+
+        // Eliminarea caracterelor duplicate din cheie
         for (i = sb_key.length() - 1; i >= 0; i--) {
             for (j = 0; j < i; j++) {
                 if (sb_key.charAt(j) == sb_key.charAt(i)) {
@@ -30,7 +32,7 @@ public class PlayfairCipher {
             }
         }
 
-        // Se inlocuieste J cu I
+        // Inlocuirea literei J cu I (specific cifrului Playfair)
         for (i = 0; i < sb_key.length(); i++) {
             if(sb_key.charAt(i) == 'J'){
                 sb_key.replace(i, i+1, "I");
@@ -39,9 +41,9 @@ public class PlayfairCipher {
 
         System.out.println("\nCheie procesata: " + sb_key + "\n");
 
-        // Se creeaza tabela de 5x5 si se populeaza
+        // Crearea si popularea tabelului Playfair 5x5
         char[][] table = new char[5][5];
-        String alfabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+        String alfabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"; // Alfabet fara J
 
         int idx = 0;
         int alfa = 0;
@@ -50,6 +52,7 @@ public class PlayfairCipher {
                 if(idx < sb_key.length()){
                     table[i][j] = sb_key.charAt(idx++);
                 } else  {
+                    // Completarea tabelului cu literele ramase din alfabet
                     if(!sb_key.toString().contains(alfabet.charAt(alfa) + "")){
                         table[i][j] = alfabet.charAt(alfa);
                     } else {
@@ -60,6 +63,7 @@ public class PlayfairCipher {
             }
         }
 
+        // Afisarea tabelului Playfair
         System.out.println("Tabela 5x5:");
         for(i = 0; i < 5; i++){
             for(j = 0; j < 5; j++){
@@ -68,6 +72,7 @@ public class PlayfairCipher {
             System.out.println();
         }
 
+        // Alegerea modului de lucru
         System.out.println("\nAlege modul:");
         System.out.println("1 - Criptare");
         System.out.println("2 - Decriptare");
@@ -76,23 +81,29 @@ public class PlayfairCipher {
         sc.nextLine();
 
         if (opt == 1) {
+            // Citirea textului pentru criptare
             System.out.print("Introdu textul ce doresti a fi criptat: ");
             String toEncrypt = sc.nextLine();
             StringBuilder sb_toEncrypt = new StringBuilder();
 
+            // Preprocesarea textului (majuscule, fara spatii)
             toEncrypt = toEncrypt.toUpperCase();
             for(i = 0; i < toEncrypt.length(); i++){
                 if(toEncrypt.charAt(i) != ' '){
                     sb_toEncrypt.append(toEncrypt.charAt(i));
                 }
             }
+
+            // Inlocuirea literei J cu I
             for(i = 0; i < toEncrypt.length(); i++){
                 if(toEncrypt.charAt(i) == 'J'){
                     sb_toEncrypt.replace(i, i+1, "I");
                 }
             }
+
             System.out.println("Textul procesat: " + sb_toEncrypt + "\n");
 
+            // Formarea digramelor si adaugarea caracterelor de umplere
             i = 0;
             while (i < sb_toEncrypt.length()) {
                 if (i + 1 < sb_toEncrypt.length() && sb_toEncrypt.charAt(i) == sb_toEncrypt.charAt(i + 1)) {
@@ -101,6 +112,7 @@ public class PlayfairCipher {
                 } else if (i + 1 < sb_toEncrypt.length()) {
                     i += 2;
                 } else {
+                    // Completare daca numarul de caractere este impar
                     if(sb_toEncrypt.charAt(i) == 'X'){
                         sb_toEncrypt.append('Z');
                     } else {
@@ -110,22 +122,29 @@ public class PlayfairCipher {
                 }
             }
 
+            // Afisarea digramelor
             System.out.print("Digrame: ");
             for (i = 0; i < sb_toEncrypt.length(); i += 2) {
                 System.out.print(sb_toEncrypt.charAt(i));
                 System.out.print(sb_toEncrypt.charAt(i + 1) + " ");
             }
 
+            // Criptarea efectiva a textului
             StringBuilder encrypted = new StringBuilder(encrypt(sb_toEncrypt, table));
             System.out.println("\n\nTextul criptat: " + encrypted);
 
         } else if (opt == 2) {
 
+            // Citirea textului criptat pentru decriptare
             System.out.print("Introdu textul de decriptat: ");
             String ciphertext = sc.nextLine();
 
             StringBuilder sb_cipher = new StringBuilder(ciphertext.toUpperCase());
+
+            // Decriptarea textului
             StringBuilder decrypted = new StringBuilder(decrypt(sb_cipher, table));
+
+            // Eliminarea caracterelor de padding
             String decrypted_withoutPadding = removePadding(decrypted);
 
             System.out.println("\nTextul decriptat (fara padding): " + decrypted_withoutPadding);
@@ -137,6 +156,7 @@ public class PlayfairCipher {
         sc.close();
     }
 
+    // Metoda pentru criptarea textului folosind regula Playfair
     public static String encrypt(StringBuilder sb_toEncrypt, char[][] table) {
         StringBuilder sb_encrypted = new StringBuilder();
 
@@ -146,6 +166,7 @@ public class PlayfairCipher {
 
             int row1 = -1, col1 = -1, row2 = -1, col2 = -1;
 
+            // Cautarea pozitiilor literelor in tabela
             for (int row = 0; row < 5; row++) {
                 for (int col = 0; col < 5; col++) {
                     if (table[row][col] == x) {
@@ -159,6 +180,7 @@ public class PlayfairCipher {
                 }
             }
 
+            // Aplicarea regulilor Playfair
             if (row1 == row2) {
                 sb_encrypted.append(table[row1][(col1 + 1) % 5]);
                 sb_encrypted.append(table[row2][(col2 + 1) % 5]);
@@ -174,6 +196,7 @@ public class PlayfairCipher {
         return sb_encrypted.toString();
     }
 
+    // Metoda pentru decriptarea textului
     public static String decrypt(StringBuilder sb_encrypted, char[][] table) {
         StringBuilder sb_decrypted = new StringBuilder();
 
@@ -183,6 +206,7 @@ public class PlayfairCipher {
 
             int row1 = -1, col1 = -1, row2 = -1, col2 = -1;
 
+            // Cautarea pozitiilor literelor in tabela
             for (int row = 0; row < 5; row++) {
                 for (int col = 0; col < 5; col++) {
                     if (table[row][col] == x) {
@@ -196,6 +220,7 @@ public class PlayfairCipher {
                 }
             }
 
+            // Aplicarea regulilor inverse Playfair
             if (row1 == row2) {
                 sb_decrypted.append(table[row1][(col1 + 4) % 5]);
                 sb_decrypted.append(table[row2][(col2 + 4) % 5]);
@@ -211,6 +236,7 @@ public class PlayfairCipher {
         return sb_decrypted.toString();
     }
 
+    // Eliminarea caracterelor de umplere adaugate la criptare
     public static String removePadding(StringBuilder sb_processed) {
         for (int i = 1; i < sb_processed.length() - 1; i++) {
             if (sb_processed.charAt(i) == 'X' && sb_processed.charAt(i - 1) == sb_processed.charAt(i + 1)) {
