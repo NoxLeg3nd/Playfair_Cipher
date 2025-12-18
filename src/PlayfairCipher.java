@@ -143,12 +143,12 @@ public class PlayfairCipher {
 
             // Decriptarea textului
             StringBuilder decrypted = new StringBuilder(decrypt(sb_cipher, table));
+            System.out.println("Textul decriptat (raw): " + decrypted);
 
             // Eliminarea caracterelor de padding
             String decrypted_withoutPadding = removePadding(decrypted);
-
             System.out.println("\nTextul decriptat (fara padding): " + decrypted_withoutPadding);
-            System.out.println("Textul decriptat (raw): " + decrypted);
+
         } else {
             System.out.println("Optiune invalida!");
         }
